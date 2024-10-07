@@ -11,17 +11,21 @@ if sys.version_info >= (3, 12, 0):
 
 
 # 텔레그램 봇 토큰과 단체 채팅방 ID 설정
-BOT_TOKEN = 'xxxxxxx'
+BOT_TOKEN = 'xxxxx'
 # 7885985935
-GROUP_CHAT_ID = xxxxx
+GROUP_CHAT_ID = xxxx
 
 # Kafka Producer 설정
 producer = KafkaProducer(
-    bootstrap_servers='127.0.0.1:9092',
+   #변경할거...
+    bootstrap_servers='',
     #bootstrap_servers='kafka:9092',  # Kafka 서버 IP 및 포트
     api_version=(2, 8, 1),
     max_block_ms=120000,
-    value_serializer=lambda v: json.dumps(v).encode('utf-8')  # JSON 형식으로 직렬화
+    key_serializer=lambda v: json.dumps(v).encode('utf-8'),
+    # key_deserializer=lambda v: json.dumps(v).encode('utf-8'),
+    value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+    # value_deserializer=lambda v: json.dumps(v).encode('utf-8')   
 )
 
 def start(update: Update, context):
@@ -38,10 +42,14 @@ def handle_message(update: Update, context):
 
     # 단체 채팅방에서 온 메시지만 Kafka로 전송
     if chat_id == GROUP_CHAT_ID:
-        message_data = {'message': message_text}
+        if message_text == '1':
+          producer.send('message-topic', key='number 1', value='vote for 1')
+        elif message_text == '2':
+          producer.send('message-topic', key='number 2', value='vote for 2')
+        else:
+          producer.send('message-topic', key='others', value=message_text)
         
         # Kafka 토픽으로 메시지 전송
-        producer.send('testtopic', message_data)
         producer.flush()  # 메시지가 즉시 전송되도록 보장
         
 
@@ -50,7 +58,7 @@ def main():
     # Updater를 사용하여 봇과 연결
     updater = Updater(BOT_TOKEN, use_context=True)
 
-    print("main executing...")
+    print("producer executing...")
     # 핸들러 추가
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("start", start))
