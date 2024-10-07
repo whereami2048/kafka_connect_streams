@@ -1,0 +1,16 @@
+{
+    "name": "mongo-sink-connector",
+    "config": {
+        "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
+        "tasks.max": "1",
+        "topics": "testtopic",
+        "connection.uri": "mongodb://admin:password@mongodb:27017",
+        "database": "chatdb",
+        "collection": "chatcollection",
+        "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "value.converter.schemas.enable": "false",
+        "max.num.retries": "3",
+        "retries.defer.timeout": "5000"
+    }
+}
