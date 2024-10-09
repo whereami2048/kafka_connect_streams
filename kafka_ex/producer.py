@@ -11,7 +11,8 @@ if sys.version_info >= (3, 12, 0):
 
 
 # 텔레그램 봇 토큰과 단체 채팅방 ID 설정
-BOT_TOKEN = 'XXXX'
+BOT_TOKEN = 'XXX'
+
 GROUP_CHAT_ID = 0
 
 # Kafka Producer 설정
@@ -45,7 +46,7 @@ def handle_message(update: Update, context):
         elif message_text == '2':
           producer.send('vote-source-topic', key='2', value='vote for 2')
         else:
-          producer.send('text-source-topic', key='text', value=message_text)
+          producer.send('text-source-topic', key='others', value=message_text)
         
         # Kafka 토픽으로 메시지 전송
         producer.flush()  # 메시지가 즉시 전송되도록 보장

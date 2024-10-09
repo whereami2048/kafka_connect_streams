@@ -16,22 +16,22 @@ public class VoteCounter {
 	private static final ObjectMapper mapper = new ObjectMapper();
 
 	public static void main(String[] args) {
-		Properties props = KafkaStreamProperty.of();
+		Properties props = KafkaStreamProperty.of("vote2-application");
 
 		//스트림 토폴로지 정의를 위한 객체 생성
 		StreamsBuilder streamsBuilder = new StreamsBuilder();
 
 		//소스 프로세서 동작
-		KStream<String, String> stream = streamsBuilder.stream(KafkaStreamProperty.RECEIVE_TOPIC_NAME);
+		KStream<String, String> stream = streamsBuilder.stream(KafkaStreamProperty.RECEIVE_VOTE_TOPIC_NAME);
 
 		//스트림 프로세서 동작
 		KTable<String, String> countTable = stream
 				.groupByKey()
 				.count()
 				.mapValues((key, value) -> {
-					HashMap<String, String> countMap = new HashMap<>();
-					countMap.put("vote_num", key);
-					countMap.put("count", value.toString());
+					HashMap<String, Long> countMap = new HashMap<>();
+					countMap.put("vote_num", Long.parseLong(key.replace('"',' ').trim()));
+					countMap.put("count", value);
 
 					try {
 						return mapper.writeValueAsString(countMap);
@@ -41,7 +41,7 @@ public class VoteCounter {
 				});
 
 		//싱크 프로세서 동작
-		countTable.toStream().to(KafkaStreamProperty.SEND_TOPIC_NAME, Produced.with(Serdes.String(), Serdes.String()));
+		countTable.toStream().to(KafkaStreamProperty.SEND_VOTE_TOPIC_NAME, Produced.with(Serdes.String(), Serdes.String()));
 
 		KafkaStreams kafkaStreams = new KafkaStreams(streamsBuilder.build(), props);
 		kafkaStreams.start();

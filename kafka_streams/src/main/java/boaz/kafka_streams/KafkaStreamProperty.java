@@ -8,13 +8,18 @@ public class KafkaStreamProperty {
 
     static final String KAFKA_LOCAL_BOOTSTRAP_SERVER = "localhost:9092";
     static final String KAFKA_BOOTSTRAP_SERVER = "";
-    static final String RECEIVE_TOPIC_NAME = "message-topic";
-    static final String SEND_TOPIC_NAME = "result-topic";
 
-    public static Properties of() {
+    static final String RECEIVE_VOTE_TOPIC_NAME = "vote-source-topic";
+    static final String SEND_VOTE_TOPIC_NAME = "vote-sink-topic";
+
+    static final String RECEIVE_TEXT_TOPIC_NAME = "text-source-topic";
+    static final String SEND_TEXT_TOPIC_NAME = "text-sink-topic";
+
+
+    public static Properties of(String applicationName) {
         Properties props = new Properties();
         // 카프카 스트림즈를 유일하게 구분할 ID값
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "sum-application");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationName);
 
         // 스트림즈에 접근할 카프카 broker 정보
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_LOCAL_BOOTSTRAP_SERVER);
